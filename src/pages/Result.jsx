@@ -54,7 +54,7 @@ const Result = () => {
                 href={mergedImage}
                 download="audit-image.png"
                 className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg text-sm transition-colors"
-              >
+              
                 Download Image
               </a>
             </div>

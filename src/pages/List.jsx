@@ -13,9 +13,9 @@ const List = () => {
   const containerRef = useRef(null)
   const [scrollTop, setScrollTop] = useState(0)
 
-  const handleScroll = useCallback(() => {
-    setScrollTop(containerRef.current.scrollTop)
-  }, [])
+const handleScroll = useCallback(() => {
+  setScrollTop(containerRef.current.scrollTop)
+}, [])
 
   const viewportHeight = 600
   const totalHeight = data.length * ROW_HEIGHT
