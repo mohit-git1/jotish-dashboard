@@ -10,13 +10,11 @@ const useEmployeeData = () => {
       try {
         const response = await fetch('https://backend.jotish.in/backend_dev/gettabledata.php', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: 'test', password: '123456' }),
         })
         const json = await response.json()
-        setData(json.data || json)
+        setData(json.TABLE_DATA.data)
       } catch (err) {
         setError(err.message)
       } finally {

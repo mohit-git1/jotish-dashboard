@@ -18,14 +18,11 @@ const List = () => {
   }, [])
 
   const viewportHeight = 600
-
   const totalHeight = data.length * ROW_HEIGHT
-
   const startIndex = Math.floor(scrollTop / ROW_HEIGHT)
   const visibleCount = Math.ceil(viewportHeight / ROW_HEIGHT)
   const endIndex = Math.min(startIndex + visibleCount + BUFFER, data.length)
   const offsetY = startIndex * ROW_HEIGHT
-
   const visibleRows = data.slice(startIndex, endIndex)
 
   if (loading) {
@@ -58,10 +55,11 @@ const List = () => {
         </div>
 
         <div className="bg-gray-900 rounded-xl overflow-hidden">
-          <div className="grid grid-cols-5 bg-gray-800 px-4 py-3 text-gray-400 text-sm font-semibold">
+          <div className="grid grid-cols-6 bg-gray-800 px-4 py-3 text-gray-400 text-sm font-semibold">
             <span>Name</span>
-            <span>Email</span>
+            <span>Position</span>
             <span>City</span>
+            <span>ID</span>
             <span>Salary</span>
             <span>Action</span>
           </div>
@@ -77,17 +75,18 @@ const List = () => {
                   <div
                     key={startIndex + i}
                     style={{ height: `${ROW_HEIGHT}px` }}
-                    className="grid grid-cols-5 px-4 items-center border-b border-gray-800 hover:bg-gray-800 transition-colors"
+                    className="grid grid-cols-6 px-4 items-center border-b border-gray-800 hover:bg-gray-800 transition-colors"
                   >
-                    <span className="text-sm">{emp.name || emp.Name}</span>
-                    <span className="text-sm text-gray-400">{emp.email || emp.Email}</span>
-                    <span className="text-sm text-gray-400">{emp.city || emp.City}</span>
-                    <span className="text-sm text-green-400">{emp.salary || emp.Salary}</span>
+                    <span className="text-sm">{emp[0]}</span>
+                    <span className="text-sm text-gray-400">{emp[1]}</span>
+                    <span className="text-sm text-gray-400">{emp[2]}</span>
+                    <span className="text-sm text-gray-400">{emp[3]}</span>
+                    <span className="text-sm text-green-400">{emp[5]}</span>
                     <button
-                      onClick={() => navigate(`/details/${emp.id || emp.ID || startIndex + i}`)}
+                      onClick={() => navigate(`/details/${emp[3]}`)}
                       className="text-blue-400 hover:text-blue-300 text-sm text-left"
                     >
-                      View Details →
+                      View →
                     </button>
                   </div>
                 ))}
@@ -103,5 +102,3 @@ const List = () => {
     </div>
   )
 }
-
-export default List
