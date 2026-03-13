@@ -50,7 +50,7 @@ const Result = () => {
                   Verified: <span className="text-white font-medium">{employee[0]}</span> — {employee[1]}
                 </p>
               )}
-              
+              <a>
                 href={mergedImage}
                 download="audit-image.png"
                 className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg text-sm transition-colors"

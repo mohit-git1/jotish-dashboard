@@ -36,10 +36,10 @@ const CityMap = ({ data }) => {
           zoom={2}
           style={{ height: '100%', width: '100%' }}
         >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="&copy; OpenStreetMap contributors"
-          />
+         <TileLayer
+  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  attribution="OpenStreetMap contributors"
+/>
           {markers.map((m) => (
             <Marker key={m.city} position={[m.lat, m.lng]}>
               <Popup>
