@@ -24,7 +24,7 @@ const Result = () => {
               onClick={() => navigate('/list')}
               className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm transition-colors"
             >
-              ← Back to List
+              Back to List
             </button>
             <button
               onClick={() => { logout(); navigate('/login') }}
@@ -47,19 +47,21 @@ const Result = () => {
               />
               {employee && (
                 <p className="text-gray-400 text-sm">
-                  Verified: <span className="text-white font-medium">{employee[0]}</span> — {employee[1]}
+                  Verified: <span className="text-white font-medium">{employee[0]}</span>
                 </p>
               )}
-              <a>
+              <a
                 href={mergedImage}
                 download="audit-image.png"
                 className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg text-sm transition-colors"
-              
+              >
                 Download Image
               </a>
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">No audit image found. Go back and complete verification.</p>
+            <p className="text-gray-500 text-sm">
+              No audit image found. Go back and complete verification.
+            </p>
           )}
         </div>
 

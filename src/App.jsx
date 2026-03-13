@@ -4,23 +4,18 @@ import List from './pages/List'
 import Details from './pages/Details'
 import Result from './pages/Result'
 import ProtectedRoute from './components/ProtectedRoute'
+import { useAuth } from './context/AuthContext'
 
 const App = () => {
+  const { user } = useAuth()
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="/login" element={<Login />} />
-
-      {/* These routes require login */}
-      <Route path="/list" element={
-        <ProtectedRoute><List /></ProtectedRoute>
-      } />
-      <Route path="/details/:id" element={
-        <ProtectedRoute><Details /></ProtectedRoute>
-      } />
-      <Route path="/result" element={
-        <ProtectedRoute><Result /></ProtectedRoute>
-      } />
+      <Route path="/login" element={user ? <Navigate to="/list" /> : <Login />} />
+      <Route path="/list" element={user ? <List /> : <Navigate to="/login" replace />} />
+      <Route path="/details/:id" element={user ? <Details /> : <Navigate to="/login" replace />} />
+      <Route path="/result" element={user ? <Result /> : <Navigate to="/login" replace />} />
     </Routes>
   )
 }

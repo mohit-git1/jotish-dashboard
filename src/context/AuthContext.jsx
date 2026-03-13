@@ -6,7 +6,6 @@ const VALID_USERNAME = 'testuser'
 const VALID_PASSWORD = 'Test123'
 
 export const AuthProvider = ({ children }) => {
-
   const [user, setUser] = useState(() => {
     return localStorage.getItem('auth_user') || null
   })

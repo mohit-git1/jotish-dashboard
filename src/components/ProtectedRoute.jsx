@@ -1,11 +1,10 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-//  redirect to login
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth()
 
-  if (!user) {
+  if (user === null) {
     return <Navigate to="/login" replace />
   }
 
