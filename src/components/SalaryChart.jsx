@@ -5,7 +5,7 @@ const SalaryChart = ({ data }) => {
     const map = {}
     data.forEach((emp) => {
       const city = emp[2]
-      const salaryStr = emp[5].replace(/[$,]/g, '')
+      const salaryStr = emp[5].replace(/[^\d]/g, '')
       const salary = parseInt(salaryStr)
       if (!map[city]) map[city] = { total: 0, count: 0 }
       map[city].total += salary
