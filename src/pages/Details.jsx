@@ -19,9 +19,8 @@ const Details = () => {
   const [cameraActive, setCameraActive] = useState(false)
   const [lastPos, setLastPos] = useState({ x: 0, y: 0 })
 
-  // find the employee by id
   const emp = data.find((e) => e[3] === id)
-  // console.log('employee found:', emp)
+  const existingVerification = localStorage.getItem(`verified_${id}`)
 
   useEffect(() => {
     return () => {
@@ -54,7 +53,6 @@ const Details = () => {
     stream.getTracks().forEach((t) => t.stop())
     setCameraActive(false)
 
-    // give the DOM a moment to mount the signature canvas
     setTimeout(() => {
       const sigCanvas = signatureCanvasRef.current
       sigCanvas.width = canvas.width
@@ -119,10 +117,21 @@ const Details = () => {
     ctx.drawImage(sigCanvas, 0, 0)
 
     const mergedImage = finalCanvas.toDataURL('image/png')
-    // store both so result page can access them
+    localStorage.setItem(`verified_${id}`, mergedImage)
     localStorage.setItem('merged_image', mergedImage)
     localStorage.setItem('audit_employee', JSON.stringify(emp))
     navigate('/result')
+  }
+
+  const viewExisting = () => {
+    localStorage.setItem('merged_image', existingVerification)
+    localStorage.setItem('audit_employee', JSON.stringify(emp))
+    navigate('/result')
+  }
+
+  const reVerify = () => {
+    localStorage.removeItem(`verified_${id}`)
+    window.location.reload()
   }
 
   return (
@@ -169,71 +178,96 @@ const Details = () => {
           </div>
         )}
 
-        <div className="bg-gray-900 rounded-2xl p-6">
-          <h2 className="text-lg font-semibold mb-4">Identity Verification</h2>
-
-          {!photo && (
-            <div className="flex flex-col items-center gap-4">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                className="rounded-xl w-full max-w-md bg-black"
-                style={{ display: cameraActive ? 'block' : 'none' }}
-              />
-
-              {!cameraActive && (
-                <div className="w-full max-w-md h-48 bg-gray-800 rounded-xl flex items-center justify-center">
-                  <p className="text-gray-500 text-sm">Camera inactive</p>
-                </div>
-              )}
-
-              <div className="flex gap-3">
-                {!cameraActive && (
-                  <button onClick={startCamera} className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors">
-                    Start Camera
-                  </button>
-                )}
-                {cameraActive && (
-                  <button onClick={capturePhoto} className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg text-sm transition-colors">
-                    Capture Photo
-                  </button>
-                )}
-              </div>
+        {existingVerification ? (
+          <div className="bg-gray-900 rounded-2xl p-6">
+            <h2 className="text-lg font-semibold mb-4 text-green-400">Already Verified</h2>
+            <img
+              src={existingVerification}
+              alt="verified"
+              className="rounded-xl max-w-full mb-4"
+              style={{ maxHeight: '300px' }}
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={viewExisting}
+                className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors"
+              >
+                View Result
+              </button>
+              <button
+                onClick={reVerify}
+                className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg text-sm transition-colors"
+              >
+                Re-verify
+              </button>
             </div>
-          )}
+          </div>
+        ) : (
+          <div className="bg-gray-900 rounded-2xl p-6">
+            <h2 className="text-lg font-semibold mb-4">Identity Verification</h2>
 
-          <canvas ref={canvasRef} className="hidden" />
-
-          {photo && (
-            <div className="flex flex-col items-center gap-4">
-              <p className="text-gray-400 text-sm">Sign your name over the photo below</p>
-              <div className="relative" style={{ width: '100%', maxWidth: '480px' }}>
-                <img src={photo} alt="captured" className="rounded-xl w-full" />
-                <canvas
-                  ref={signatureCanvasRef}
-                  onMouseDown={startDrawing}
-                  onMouseMove={draw}
-                  onMouseUp={stopDrawing}
-                  onMouseLeave={stopDrawing}
-                  onTouchStart={startDrawing}
-                  onTouchMove={draw}
-                  onTouchEnd={stopDrawing}
-                  className="absolute top-0 left-0 w-full h-full rounded-xl cursor-crosshair"
-                  style={{ touchAction: 'none' }}
+            {!photo && (
+              <div className="flex flex-col items-center gap-4">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="rounded-xl w-full max-w-md bg-black"
+                  style={{ display: cameraActive ? 'block' : 'none' }}
                 />
+                {!cameraActive && (
+                  <div className="w-full max-w-md h-48 bg-gray-800 rounded-xl flex items-center justify-center">
+                    <p className="text-gray-500 text-sm">Camera inactive</p>
+                  </div>
+                )}
+                <div className="flex gap-3">
+                  {!cameraActive && (
+                    <button onClick={startCamera} className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors">
+                      Start Camera
+                    </button>
+                  )}
+                  {cameraActive && (
+                    <button onClick={capturePhoto} className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg text-sm transition-colors">
+                      Capture Photo
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="flex gap-3">
-                <button onClick={clearSignature} className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg text-sm transition-colors">
-                  Clear Signature
-                </button>
-                <button onClick={mergeAndProceed} className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors">
-                  Confirm and Continue
-                </button>
+            )}
+
+            <canvas ref={canvasRef} className="hidden" />
+
+            {photo && (
+              <div className="flex flex-col items-center gap-4">
+                <p className="text-gray-400 text-sm">Sign your name over the photo below</p>
+                <div className="relative" style={{ width: '100%', maxWidth: '480px' }}>
+                  <img src={photo} alt="captured" className="rounded-xl w-full" />
+                  <canvas
+                    ref={signatureCanvasRef}
+                    onMouseDown={startDrawing}
+                    onMouseMove={draw}
+                    onMouseUp={stopDrawing}
+                    onMouseLeave={stopDrawing}
+                    onTouchStart={startDrawing}
+                    onTouchMove={draw}
+                    onTouchEnd={stopDrawing}
+                    className="absolute top-0 left-0 w-full h-full rounded-xl cursor-crosshair"
+                    style={{ touchAction: 'none' }}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button onClick={clearSignature} className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg text-sm transition-colors">
+                    Clear Signature
+                  </button>
+                  <button onClick={mergeAndProceed} className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors">
+                    Confirm and Continue
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
+
       </div>
     </div>
   )

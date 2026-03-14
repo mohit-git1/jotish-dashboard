@@ -13,7 +13,6 @@ const List = () => {
   const navigate = useNavigate()
   const containerRef = useRef(null)
   const [scrollTop, setScrollTop] = useState(0)
-  // const [search, setSearch] = useState('') // was going to add search filter
 
   const handleScroll = useCallback(() => {
     setScrollTop(containerRef.current.scrollTop)
@@ -26,6 +25,8 @@ const List = () => {
   const endIndex = Math.min(startIndex + visibleCount + BUFFER, data.length)
   const offsetY = startIndex * ROW_HEIGHT
   const visibleRows = data.slice(startIndex, endIndex)
+
+  const verifiedIds = data.map(e => e[3]).filter(eid => localStorage.getItem(`verified_${eid}`))
 
   console.log('rendering rows:', startIndex, 'to', endIndex)
 
@@ -75,13 +76,19 @@ const List = () => {
               <div style={{ transform: `translateY(${offsetY}px)` }}>
                 {visibleRows.map((emp, i) => {
                   const rowIndex = startIndex + i
+                  const isVerified = verifiedIds.includes(emp[3])
                   return (
                     <div
                       key={rowIndex}
                       style={{ height: `${ROW_HEIGHT}px` }}
                       className="grid grid-cols-6 px-4 items-center border-b border-gray-800 hover:bg-gray-800 transition-colors"
                     >
-                      <span className="text-sm">{emp[0]}</span>
+                      <span className="text-sm flex items-center gap-2">
+                        {emp[0]}
+                        {isVerified && (
+                          <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded-full">Verified</span>
+                        )}
+                      </span>
                       <span className="text-sm text-gray-400">{emp[1]}</span>
                       <span className="text-sm text-gray-400">{emp[2]}</span>
                       <span className="text-sm text-gray-400">{emp[3]}</span>
