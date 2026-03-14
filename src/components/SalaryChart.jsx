@@ -5,8 +5,7 @@ const SalaryChart = ({ data }) => {
     const map = {}
     data.forEach((emp) => {
       const city = emp[2]
-      const salaryStr = emp[5].replace(/[^\d]/g, '')
-      const salary = parseInt(salaryStr)
+      const salary = parseInt(emp[5].replace(/[^\d]/g, ''))
       if (!map[city]) map[city] = { total: 0, count: 0 }
       map[city].total += salary
       map[city].count += 1
@@ -21,7 +20,7 @@ const SalaryChart = ({ data }) => {
 
   const barWidth = 60
   const barGap = 40
-  const paddingLeft = 70
+  const paddingLeft = 80
   const paddingRight = 30
   const paddingTop = 30
   const paddingBottom = 80
@@ -31,9 +30,9 @@ const SalaryChart = ({ data }) => {
   const chartHeight = barAreaHeight + paddingTop + paddingBottom
 
   return (
-    <div className="bg-gray-900 rounded-2xl p-6">
-      <h2 className="text-lg font-semibold mb-6 text-white">Average Salary by City</h2>
-      <div className="overflow-x-auto">
+    <div>
+      <h2 style={{ fontSize: '15px', fontWeight: '600', color: '#1a1a1a', margin: '0 0 20px 0' }}>Average Salary by City</h2>
+      <div style={{ overflowX: 'auto' }}>
         <svg width={chartWidth} height={chartHeight}>
 
           {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
@@ -41,23 +40,16 @@ const SalaryChart = ({ data }) => {
             const value = Math.round(ratio * maxAvg)
             return (
               <g key={ratio}>
-                <line
-                  x1={paddingLeft}
-                  x2={chartWidth - paddingRight}
-                  y1={y}
-                  y2={y}
-                  stroke="#374151"
-                  strokeWidth="1"
-                />
-                   <text x={paddingLeft - 8} y={y + 4} textAnchor="end" fill="#9ca3af" fontSize="11">
-                      {'\u20B9'}{(value / 1000).toFixed(0)}k
-                   </text>
+                <line x1={paddingLeft} x2={chartWidth - paddingRight} y1={y} y2={y} stroke="#e5e5e0" strokeWidth="1" />
+                <text x={paddingLeft - 8} y={y + 4} textAnchor="end" fill="#999" fontSize="11">
+                  {'\u20B9'}{(value / 1000).toFixed(0)}k
+                </text>
               </g>
             )
           })}
 
-          <line x1={paddingLeft} x2={paddingLeft} y1={paddingTop} y2={paddingTop + barAreaHeight} stroke="#6b7280" strokeWidth="1" />
-          <line x1={paddingLeft} x2={chartWidth - paddingRight} y1={paddingTop + barAreaHeight} y2={paddingTop + barAreaHeight} stroke="#6b7280" strokeWidth="1" />
+          <line x1={paddingLeft} x2={paddingLeft} y1={paddingTop} y2={paddingTop + barAreaHeight} stroke="#ccc" strokeWidth="1" />
+          <line x1={paddingLeft} x2={chartWidth - paddingRight} y1={paddingTop + barAreaHeight} y2={paddingTop + barAreaHeight} stroke="#ccc" strokeWidth="1" />
 
           {cityData.map((item, i) => {
             const barHeight = (item.avg / maxAvg) * barAreaHeight
@@ -66,15 +58,15 @@ const SalaryChart = ({ data }) => {
 
             return (
               <g key={item.city}>
-                <rect x={x} y={y} width={barWidth} height={barHeight} fill="#3b82f6" rx="4" />
-              <text x={x + barWidth / 2} y={y - 8} textAnchor="middle" fill="#e5e7eb" fontSize="11">
-                {(item.avg / 1000).toFixed(0)}k
+                <rect x={x} y={y} width={barWidth} height={barHeight} fill="#1a1a1a" rx="3" />
+                <text x={x + barWidth / 2} y={y - 8} textAnchor="middle" fill="#555" fontSize="11">
+                  {'\u20B9'}{(item.avg / 1000).toFixed(0)}k
                 </text>
                 <text
                   x={x + barWidth / 2}
                   y={paddingTop + barAreaHeight + 16}
                   textAnchor="end"
-                  fill="#9ca3af"
+                  fill="#888"
                   fontSize="12"
                   transform={`rotate(-40, ${x + barWidth / 2}, ${paddingTop + barAreaHeight + 16})`}
                 >

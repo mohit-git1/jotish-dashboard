@@ -24,9 +24,7 @@ const Details = () => {
 
   useEffect(() => {
     return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop())
-      }
+      if (stream) stream.getTracks().forEach((track) => track.stop())
     }
   }, [stream])
 
@@ -46,13 +44,10 @@ const Details = () => {
     const video = videoRef.current
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
-    const ctx = canvas.getContext('2d')
-    ctx.drawImage(video, 0, 0)
-    const dataUrl = canvas.toDataURL('image/png')
-    setPhoto(dataUrl)
+    canvas.getContext('2d').drawImage(video, 0, 0)
+    setPhoto(canvas.toDataURL('image/png'))
     stream.getTracks().forEach((t) => t.stop())
     setCameraActive(false)
-
     setTimeout(() => {
       const sigCanvas = signatureCanvasRef.current
       sigCanvas.width = canvas.width
@@ -66,17 +61,10 @@ const Details = () => {
     const scaleY = canvas.height / rect.height
     const clientX = e.touches ? e.touches[0].clientX : e.clientX
     const clientY = e.touches ? e.touches[0].clientY : e.clientY
-    return {
-      x: (clientX - rect.left) * scaleX,
-      y: (clientY - rect.top) * scaleY,
-    }
+    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY }
   }
 
-  const startDrawing = (e) => {
-    e.preventDefault()
-    setIsDrawing(true)
-    setLastPos(getPos(e, signatureCanvasRef.current))
-  }
+  const startDrawing = (e) => { e.preventDefault(); setIsDrawing(true); setLastPos(getPos(e, signatureCanvasRef.current)) }
 
   const draw = (e) => {
     e.preventDefault()
@@ -87,17 +75,14 @@ const Details = () => {
     ctx.beginPath()
     ctx.moveTo(lastPos.x, lastPos.y)
     ctx.lineTo(pos.x, pos.y)
-    ctx.strokeStyle = '#00ff88'
-    ctx.lineWidth = 3
+    ctx.strokeStyle = '#1a56db'
+    ctx.lineWidth = 2.5
     ctx.lineCap = 'round'
     ctx.stroke()
     setLastPos(pos)
   }
 
-  const stopDrawing = (e) => {
-    e.preventDefault()
-    setIsDrawing(false)
-  }
+  const stopDrawing = (e) => { e.preventDefault(); setIsDrawing(false) }
 
   const clearSignature = () => {
     const canvas = signatureCanvasRef.current
@@ -108,14 +93,11 @@ const Details = () => {
     const finalCanvas = document.createElement('canvas')
     const photoCanvas = canvasRef.current
     const sigCanvas = signatureCanvasRef.current
-
     finalCanvas.width = photoCanvas.width
     finalCanvas.height = photoCanvas.height
-
     const ctx = finalCanvas.getContext('2d')
     ctx.drawImage(photoCanvas, 0, 0)
     ctx.drawImage(sigCanvas, 0, 0)
-
     const mergedImage = finalCanvas.toDataURL('image/png')
     localStorage.setItem(`verified_${id}`, mergedImage)
     localStorage.setItem('merged_image', mergedImage)
@@ -134,114 +116,76 @@ const Details = () => {
     window.location.reload()
   }
 
+  const card = { background: '#fff', border: '1px solid #ddd', borderRadius: '8px', padding: '24px', marginBottom: '20px' }
+  const label = { fontSize: '11px', color: '#999', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }
+  const btn = (bg, color = '#fff') => ({ background: bg, color, border: 'none', padding: '9px 20px', borderRadius: '6px', fontSize: '13px', cursor: 'pointer', fontWeight: '500' })
+
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <button onClick={() => navigate('/list')} className="text-gray-400 hover:text-white text-sm">
+    <div style={{ minHeight: '100vh', background: '#f5f5f0', padding: '32px 24px', fontFamily: 'sans-serif' }}>
+      <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <button onClick={() => navigate('/list')} style={{ ...btn('#fff', '#555'), border: '1px solid #ccc' }}>
             Back to List
           </button>
-          <button
-            onClick={() => { logout(); navigate('/login') }}
-            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm"
-          >
-            Logout
-          </button>
+          <button onClick={() => { logout(); navigate('/login') }} style={btn('#c0392b')}>Logout</button>
         </div>
 
         {emp ? (
-          <div className="bg-gray-900 rounded-2xl p-6 mb-6">
-            <h1 className="text-2xl font-bold mb-1">{emp[0]}</h1>
-            <p className="text-blue-400 mb-4">{emp[1]}</p>
-            <div className="grid grid-cols-3 gap-4 text-sm">
-              <div>
-                <p className="text-gray-400">City</p>
-                <p>{emp[2]}</p>
-              </div>
-              <div>
-                <p className="text-gray-400">Employee ID</p>
-                <p>{emp[3]}</p>
-              </div>
-              <div>
-                <p className="text-gray-400">Salary</p>
-                <p className="text-green-400">{emp[5]}</p>
-              </div>
-              <div>
-                <p className="text-gray-400">Start Date</p>
-                <p>{emp[4]}</p>
-              </div>
+          <div style={card}>
+            <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px 0' }}>{emp[0]}</h1>
+            <p style={{ fontSize: '13px', color: '#1a56db', margin: '0 0 20px 0' }}>{emp[1]}</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+              {[['City', emp[2]], ['Employee ID', emp[3]], ['Salary', emp[5]], ['Start Date', emp[4]]].map(([l, v]) => (
+                <div key={l}>
+                  <p style={label}>{l}</p>
+                  <p style={{ fontSize: '14px', color: '#1a1a1a', margin: 0 }}>{v}</p>
+                </div>
+              ))}
             </div>
           </div>
         ) : (
-          <div className="bg-gray-900 rounded-2xl p-6 mb-6">
-            <p className="text-gray-400">Loading employee data...</p>
-          </div>
+          <div style={card}><p style={{ color: '#999' }}>Loading employee data...</p></div>
         )}
 
         {existingVerification ? (
-          <div className="bg-gray-900 rounded-2xl p-6">
-            <h2 className="text-lg font-semibold mb-4 text-green-400">Already Verified</h2>
-            <img
-              src={existingVerification}
-              alt="verified"
-              className="rounded-xl max-w-full mb-4"
-              style={{ maxHeight: '300px' }}
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={viewExisting}
-                className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors"
-              >
-                View Result
-              </button>
-              <button
-                onClick={reVerify}
-                className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg text-sm transition-colors"
-              >
-                Re-verify
-              </button>
+          <div style={card}>
+            <h2 style={{ fontSize: '15px', fontWeight: '600', color: '#2e7d32', margin: '0 0 16px 0' }}>Already Verified</h2>
+            <img src={existingVerification} alt="verified" style={{ borderRadius: '6px', maxWidth: '100%', maxHeight: '280px', display: 'block', marginBottom: '16px' }} />
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={viewExisting} style={btn('#1a1a1a')}>View Result</button>
+              <button onClick={reVerify} style={{ ...btn('#fff', '#555'), border: '1px solid #ccc' }}>Re-verify</button>
             </div>
           </div>
         ) : (
-          <div className="bg-gray-900 rounded-2xl p-6">
-            <h2 className="text-lg font-semibold mb-4">Identity Verification</h2>
+          <div style={card}>
+            <h2 style={{ fontSize: '15px', fontWeight: '600', color: '#1a1a1a', margin: '0 0 20px 0' }}>Identity Verification</h2>
 
             {!photo && (
-              <div className="flex flex-col items-center gap-4">
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
                 <video
                   ref={videoRef}
                   autoPlay
                   playsInline
-                  className="rounded-xl w-full max-w-md bg-black"
-                  style={{ display: cameraActive ? 'block' : 'none' }}
+                  style={{ borderRadius: '6px', width: '100%', maxWidth: '420px', background: '#eee', display: cameraActive ? 'block' : 'none' }}
                 />
                 {!cameraActive && (
-                  <div className="w-full max-w-md h-48 bg-gray-800 rounded-xl flex items-center justify-center">
-                    <p className="text-gray-500 text-sm">Camera inactive</p>
+                  <div style={{ width: '100%', maxWidth: '420px', height: '180px', background: '#f0f0ec', borderRadius: '6px', border: '1px dashed #ccc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <p style={{ color: '#aaa', fontSize: '13px' }}>Camera inactive</p>
                   </div>
                 )}
-                <div className="flex gap-3">
-                  {!cameraActive && (
-                    <button onClick={startCamera} className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors">
-                      Start Camera
-                    </button>
-                  )}
-                  {cameraActive && (
-                    <button onClick={capturePhoto} className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg text-sm transition-colors">
-                      Capture Photo
-                    </button>
-                  )}
-                </div>
+                {!cameraActive && <button onClick={startCamera} style={btn('#1a1a1a')}>Start Camera</button>}
+                {cameraActive && <button onClick={capturePhoto} style={btn('#2e7d32')}>Capture Photo</button>}
               </div>
             )}
 
-            <canvas ref={canvasRef} className="hidden" />
+            <canvas ref={canvasRef} style={{ display: 'none' }} />
 
             {photo && (
-              <div className="flex flex-col items-center gap-4">
-                <p className="text-gray-400 text-sm">Sign your name over the photo below</p>
-                <div className="relative" style={{ width: '100%', maxWidth: '480px' }}>
-                  <img src={photo} alt="captured" className="rounded-xl w-full" />
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <p style={{ fontSize: '13px', color: '#888', margin: 0 }}>Sign your name over the photo below</p>
+                <div style={{ position: 'relative', width: '100%', maxWidth: '480px' }}>
+                  <img src={photo} alt="captured" style={{ borderRadius: '6px', width: '100%', display: 'block' }} />
                   <canvas
                     ref={signatureCanvasRef}
                     onMouseDown={startDrawing}
@@ -251,23 +195,17 @@ const Details = () => {
                     onTouchStart={startDrawing}
                     onTouchMove={draw}
                     onTouchEnd={stopDrawing}
-                    className="absolute top-0 left-0 w-full h-full rounded-xl cursor-crosshair"
-                    style={{ touchAction: 'none' }}
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', borderRadius: '6px', cursor: 'crosshair', touchAction: 'none' }}
                   />
                 </div>
-                <div className="flex gap-3">
-                  <button onClick={clearSignature} className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg text-sm transition-colors">
-                    Clear Signature
-                  </button>
-                  <button onClick={mergeAndProceed} className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors">
-                    Confirm and Continue
-                  </button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button onClick={clearSignature} style={{ ...btn('#fff', '#555'), border: '1px solid #ccc' }}>Clear</button>
+                  <button onClick={mergeAndProceed} style={btn('#1a1a1a')}>Confirm and Continue</button>
                 </div>
               </div>
             )}
           </div>
         )}
-
       </div>
     </div>
   )

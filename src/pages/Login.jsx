@@ -21,39 +21,39 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-      <div className="bg-gray-900 p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h1 className="text-white text-2xl font-bold mb-2">Jotish Dashboard</h1>
-        <p className="text-gray-400 text-sm mb-6">Sign in to continue</p>
+    <div style={{ minHeight: '100vh', background: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
+      <div style={{ background: '#fff', padding: '40px', borderRadius: '10px', border: '1px solid #ddd', width: '100%', maxWidth: '400px' }}>
+        <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px 0' }}>Jotish Dashboard</h1>
+        <p style={{ fontSize: '13px', color: '#888', margin: '0 0 28px 0' }}>Sign in to continue</p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-gray-400 text-sm">Username</label>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontSize: '13px', color: '#555', fontWeight: '500' }}>Username</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="bg-gray-800 text-white rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="testuser"
+              style={{ padding: '9px 12px', border: '1px solid #ccc', borderRadius: '6px', fontSize: '14px', color: '#1a1a1a', outline: 'none', background: '#fafaf8' }}
             />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label className="text-gray-400 text-sm">Password</label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontSize: '13px', color: '#555', fontWeight: '500' }}>Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-gray-800 text-white rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="password"
+              style={{ padding: '9px 12px', border: '1px solid #ccc', borderRadius: '6px', fontSize: '14px', color: '#1a1a1a', outline: 'none', background: '#fafaf8' }}
             />
           </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p style={{ fontSize: '13px', color: '#c0392b', margin: 0 }}>{error}</p>}
 
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors"
+            style={{ background: '#1a1a1a', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}
           >
             Sign In
           </button>

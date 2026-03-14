@@ -5,7 +5,6 @@ import useEmployeeData from '../hooks/useEmployeeData'
 
 const ROW_HEIGHT = 60
 const BUFFER = 5
-// tried BUFFER = 3 first but scrolling felt janky
 
 const List = () => {
   const { data, loading, error } = useEmployeeData()
@@ -32,39 +31,40 @@ const List = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <p className="text-white text-lg">Loading employees...</p>
+      <div style={{ minHeight: '100vh', background: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: '#555', fontSize: '16px' }}>Loading employees...</p>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <p className="text-red-400 text-lg">Error: {error}</p>
+      <div style={{ minHeight: '100vh', background: '#f5f5f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: '#c0392b', fontSize: '16px' }}>Error: {error}</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Employee List</h1>
-          <button onClick={() => { logout(); navigate('/login') }}
-            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm transition-colors">
+    <div style={{ minHeight: '100vh', background: '#f5f5f0', padding: '32px 24px', fontFamily: 'sans-serif' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#1a1a1a', margin: 0 }}>Employee List</h1>
+          <button
+            onClick={() => { logout(); navigate('/login') }}
+            style={{ background: '#c0392b', color: '#fff', border: 'none', padding: '8px 18px', borderRadius: '6px', fontSize: '13px', cursor: 'pointer' }}
+          >
             Logout
           </button>
         </div>
 
-        <div className="bg-gray-900 rounded-xl overflow-hidden">
-          <div className="grid grid-cols-6 bg-gray-800 px-4 py-3 text-gray-400 text-sm font-semibold">
-            <span>Name</span>
-            <span>Position</span>
-            <span>City</span>
-            <span>ID</span>
-            <span>Salary</span>
-            <span>Action</span>
+        <div style={{ background: '#fff', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 2fr 1fr 1fr 1fr 1fr', padding: '12px 20px', background: '#efefea', borderBottom: '1px solid #ddd' }}>
+            {['Name', 'Position', 'City', 'ID', 'Salary', 'Action'].map(h => (
+              <span key={h} style={{ fontSize: '12px', fontWeight: '600', color: '#666', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</span>
+            ))}
           </div>
 
           <div
@@ -80,22 +80,31 @@ const List = () => {
                   return (
                     <div
                       key={rowIndex}
-                      style={{ height: `${ROW_HEIGHT}px` }}
-                      className="grid grid-cols-6 px-4 items-center border-b border-gray-800 hover:bg-gray-800 transition-colors"
+                      style={{
+                        height: `${ROW_HEIGHT}px`,
+                        display: 'grid',
+                        gridTemplateColumns: '2fr 2fr 1fr 1fr 1fr 1fr',
+                        padding: '0 20px',
+                        alignItems: 'center',
+                        borderBottom: '1px solid #eee',
+                        background: rowIndex % 2 === 0 ? '#fff' : '#fafaf8',
+                      }}
                     >
-                      <span className="text-sm flex items-center gap-2">
+                      <span style={{ fontSize: '14px', fontWeight: '500', color: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {emp[0]}
                         {isVerified && (
-                          <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded-full">Verified</span>
+                          <span style={{ fontSize: '11px', background: '#e8f5e9', color: '#2e7d32', padding: '2px 8px', borderRadius: '20px', fontWeight: '600' }}>
+                            Verified
+                          </span>
                         )}
                       </span>
-                      <span className="text-sm text-gray-400">{emp[1]}</span>
-                      <span className="text-sm text-gray-400">{emp[2]}</span>
-                      <span className="text-sm text-gray-400">{emp[3]}</span>
-                      <span className="text-sm text-green-400">{emp[5]}</span>
+                      <span style={{ fontSize: '13px', color: '#555' }}>{emp[1]}</span>
+                      <span style={{ fontSize: '13px', color: '#555' }}>{emp[2]}</span>
+                      <span style={{ fontSize: '13px', color: '#555' }}>{emp[3]}</span>
+                      <span style={{ fontSize: '13px', color: '#2e7d32', fontWeight: '500' }}>{emp[5]}</span>
                       <button
                         onClick={() => navigate(`/details/${emp[3]}`)}
-                        className="text-blue-400 hover:text-blue-300 text-sm text-left"
+                        style={{ fontSize: '13px', color: '#1a56db', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}
                       >
                         View
                       </button>
@@ -107,7 +116,7 @@ const List = () => {
           </div>
         </div>
 
-        <p className="text-gray-500 text-sm mt-3">
+        <p style={{ fontSize: '12px', color: '#999', marginTop: '10px' }}>
           Showing {startIndex + 1} to {endIndex} of {data.length} employees
         </p>
       </div>
