@@ -49,9 +49,9 @@ const SalaryChart = ({ data }) => {
                   stroke="#374151"
                   strokeWidth="1"
                 />
-                <text x={paddingLeft - 8} y={y + 4} textAnchor="end" fill="#9ca3af" fontSize="11">
-                  ${(value / 1000).toFixed(0)}k
-                </text>
+                   <text x={paddingLeft - 8} y={y + 4} textAnchor="end" fill="#9ca3af" fontSize="11">
+                      {'\u20B9'}{(value / 1000).toFixed(0)}k
+                   </text>
               </g>
             )
           })}
@@ -67,8 +67,8 @@ const SalaryChart = ({ data }) => {
             return (
               <g key={item.city}>
                 <rect x={x} y={y} width={barWidth} height={barHeight} fill="#3b82f6" rx="4" />
-                <text x={x + barWidth / 2} y={y - 8} textAnchor="middle" fill="#e5e7eb" fontSize="11">
-                  ${(item.avg / 1000).toFixed(0)}k
+              <text x={x + barWidth / 2} y={y - 8} textAnchor="middle" fill="#e5e7eb" fontSize="11">
+                {(item.avg / 1000).toFixed(0)}k
                 </text>
                 <text
                   x={x + barWidth / 2}
