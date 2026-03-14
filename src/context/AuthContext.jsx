@@ -7,11 +7,13 @@ const VALID_PASSWORD = 'Test123'
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    return localStorage.getItem('auth_user') || null
+    const saved = localStorage.getItem('auth_user')
+    return saved || null
   })
 
   const login = (username, password) => {
-    if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+    const isValid = username === VALID_USERNAME && password === VALID_PASSWORD
+    if (isValid) {
       localStorage.setItem('auth_user', username)
       setUser(username)
       return true

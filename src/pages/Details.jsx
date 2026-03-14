@@ -19,7 +19,9 @@ const Details = () => {
   const [cameraActive, setCameraActive] = useState(false)
   const [lastPos, setLastPos] = useState({ x: 0, y: 0 })
 
-  const employee = data.find((emp) => emp[3] === id)
+  // find the employee by id
+  const emp = data.find((e) => e[3] === id)
+  // console.log('employee found:', emp)
 
   useEffect(() => {
     return () => {
@@ -49,9 +51,10 @@ const Details = () => {
     ctx.drawImage(video, 0, 0)
     const dataUrl = canvas.toDataURL('image/png')
     setPhoto(dataUrl)
-    stream.getTracks().forEach((track) => track.stop())
+    stream.getTracks().forEach((t) => t.stop())
     setCameraActive(false)
 
+    // give the DOM a moment to mount the signature canvas
     setTimeout(() => {
       const sigCanvas = signatureCanvasRef.current
       sigCanvas.width = canvas.width
@@ -100,8 +103,7 @@ const Details = () => {
 
   const clearSignature = () => {
     const canvas = signatureCanvasRef.current
-    const ctx = canvas.getContext('2d')
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
   }
 
   const mergeAndProceed = () => {
@@ -117,8 +119,9 @@ const Details = () => {
     ctx.drawImage(sigCanvas, 0, 0)
 
     const mergedImage = finalCanvas.toDataURL('image/png')
+    // store both so result page can access them
     localStorage.setItem('merged_image', mergedImage)
-    localStorage.setItem('audit_employee', JSON.stringify(employee))
+    localStorage.setItem('audit_employee', JSON.stringify(emp))
     navigate('/result')
   }
 
@@ -126,11 +129,8 @@ const Details = () => {
     <div className="min-h-screen bg-gray-950 text-white p-6">
       <div className="max-w-3xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <button
-            onClick={() => navigate('/list')}
-            className="text-gray-400 hover:text-white text-sm"
-          >
-            ← Back to List
+          <button onClick={() => navigate('/list')} className="text-gray-400 hover:text-white text-sm">
+            Back to List
           </button>
           <button
             onClick={() => { logout(); navigate('/login') }}
@@ -140,26 +140,26 @@ const Details = () => {
           </button>
         </div>
 
-        {employee ? (
+        {emp ? (
           <div className="bg-gray-900 rounded-2xl p-6 mb-6">
-            <h1 className="text-2xl font-bold mb-1">{employee[0]}</h1>
-            <p className="text-blue-400 mb-4">{employee[1]}</p>
+            <h1 className="text-2xl font-bold mb-1">{emp[0]}</h1>
+            <p className="text-blue-400 mb-4">{emp[1]}</p>
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
                 <p className="text-gray-400">City</p>
-                <p>{employee[2]}</p>
+                <p>{emp[2]}</p>
               </div>
               <div>
                 <p className="text-gray-400">Employee ID</p>
-                <p>{employee[3]}</p>
+                <p>{emp[3]}</p>
               </div>
               <div>
                 <p className="text-gray-400">Salary</p>
-                <p className="text-green-400">{employee[5]}</p>
+                <p className="text-green-400">{emp[5]}</p>
               </div>
               <div>
                 <p className="text-gray-400">Start Date</p>
-                <p>{employee[4]}</p>
+                <p>{emp[4]}</p>
               </div>
             </div>
           </div>
@@ -190,18 +190,12 @@ const Details = () => {
 
               <div className="flex gap-3">
                 {!cameraActive && (
-                  <button
-                    onClick={startCamera}
-                    className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors"
-                  >
+                  <button onClick={startCamera} className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors">
                     Start Camera
                   </button>
                 )}
                 {cameraActive && (
-                  <button
-                    onClick={capturePhoto}
-                    className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg text-sm transition-colors"
-                  >
+                  <button onClick={capturePhoto} className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg text-sm transition-colors">
                     Capture Photo
                   </button>
                 )}
@@ -214,13 +208,8 @@ const Details = () => {
           {photo && (
             <div className="flex flex-col items-center gap-4">
               <p className="text-gray-400 text-sm">Sign your name over the photo below</p>
-
               <div className="relative" style={{ width: '100%', maxWidth: '480px' }}>
-                <img
-                  src={photo}
-                  alt="captured"
-                  className="rounded-xl w-full"
-                />
+                <img src={photo} alt="captured" className="rounded-xl w-full" />
                 <canvas
                   ref={signatureCanvasRef}
                   onMouseDown={startDrawing}
@@ -234,19 +223,12 @@ const Details = () => {
                   style={{ touchAction: 'none' }}
                 />
               </div>
-
               <div className="flex gap-3">
-                <button
-                  onClick={clearSignature}
-                  className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg text-sm transition-colors"
-                >
+                <button onClick={clearSignature} className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg text-sm transition-colors">
                   Clear Signature
                 </button>
-                <button
-                  onClick={mergeAndProceed}
-                  className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors"
-                >
-                  Confirm & Continue →
+                <button onClick={mergeAndProceed} className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg text-sm transition-colors">
+                  Confirm and Continue
                 </button>
               </div>
             </div>
