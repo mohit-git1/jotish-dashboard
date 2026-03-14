@@ -1,85 +1,81 @@
 # Jotish Employee Insights Dashboard
 
-A 4-screen employee management dashboard built with React + Vite, featuring custom virtualization, camera-based identity verification, and data visualization.
+A 4-screen employee dashboard built with React + Vite for the Jotish internship assignment. Has login, a virtualized employee list, identity verification with camera + signature, and a results page with charts and a map.
+
+---
 
 ## Tech Stack
 
-- React 18 + Vite
-- React Router v6
-- Tailwind CSS v3
-- Leaflet + react-leaflet
-- Native Browser APIs (Camera, Canvas, Web Storage)
+React 18, Vite, React Router v6, Tailwind CSS v3, Context API, Leaflet — all vanilla, no UI component libraries, no virtualization libraries.
+
+---
 
 ## Screens
 
 | Route | Description |
 |---|---|
 | `/login` | Auth with Context API + localStorage persistence |
-| `/list` | Virtualized employee grid fetched from API |
-| `/details/:id` | Camera capture + canvas signature + image merge |
-| `/result` | Merged audit image + SVG salary chart + city map |
+| `/list` | Virtualized employee grid |
+| `/details/:id` | Camera capture, signature, image merge |
+| `/result` | Audit image + SVG salary chart + city map |
 
-## Custom Virtualization Math
-
-The list page renders only the rows visible in the viewport plus a small buffer, instead of all rows at once.
-```
-ROW_HEIGHT = 60px
-
-totalHeight    = totalRows * ROW_HEIGHT
-startIndex     = Math.floor(scrollTop / ROW_HEIGHT)
-visibleCount   = Math.ceil(viewportHeight / ROW_HEIGHT)
-endIndex       = startIndex + visibleCount + BUFFER
-offsetY        = startIndex * ROW_HEIGHT
-```
-
-- `totalHeight` sets the full scrollable height so the scrollbar behaves correctly
-- `startIndex` tells us which row sits at the current scroll position
-- `offsetY` pushes the rendered rows down via CSS `translateY` so they appear at the correct visual position
-- Only `visibleCount + BUFFER` rows exist in the DOM at any time
-
-## Image Merging Logic
-
-1. When the user captures a photo, it is drawn onto a hidden `<canvas>` via `ctx.drawImage(video, 0, 0)`
-2. The signature canvas sits absolutely on top of the photo using CSS positioning
-3. On confirm, a new offscreen canvas is created at the same dimensions
-4. Both canvases are drawn onto it sequentially: first the photo canvas, then the signature canvas
-5. `finalCanvas.toDataURL('image/png')` produces a Base64 string of the merged image
-6. This is stored in localStorage and displayed on the Result page
-
-## Geospatial Mapping
-
-City-to-coordinate mapping is handled via a static lookup table in `src/utils/cityCoordinates.js`. Each city name from the API is matched against this table to get lat/lng values for Leaflet markers. Cities not found in the table are filtered out.
-
-## Intentional Bug
-
-**Location:** `src/pages/List.jsx` — the `handleScroll` function
-
-**Code:**
-```jsx
-const handleScroll = useCallback(() => {
-  setScrollTop(containerRef.current.scrollTop)
-}, [])
-```
-
-**What it is:** A stale closure caused by an empty dependency array in `useCallback`.
-
-**Why it is a bug:** `useCallback` with `[]` memoizes the callback on the first render and never recreates it. If `containerRef.current` changes between renders (e.g. on remount or fast navigation), the closure holds a reference to the old DOM node. Under normal usage the app works, but under rapid component remounting or concurrent rendering this can silently read stale scroll values and cause the virtualization to render the wrong rows.
-
-**Why I chose it:** It is a subtle, realistic bug that appears in production React codebases. It demonstrates understanding of closure semantics, React's rendering lifecycle, and how `useCallback` interacts with mutable refs.
+---
 
 ## Running Locally
+
 ```bash
 npm install
 npm run dev
 ```
 
-## Environment
-
-No environment variables required. API credentials are hardcoded as per assignment spec.
-```
+Login: `testuser` / `Test123`
 
 ---
 
-**Git commit message:**
+## How the Virtualization Works
+
+Instead of rendering all rows at once, only the visible rows plus a small buffer are in the DOM.
+
 ```
-docs: add README with intentional bug documentation and virtualization math explanation
+startIndex = Math.floor(scrollTop / ROW_HEIGHT)
+endIndex   = startIndex + visibleCount + BUFFER
+offsetY    = startIndex * ROW_HEIGHT
+```
+
+A full-height wrapper div keeps the scrollbar accurate. `translateY(offsetY)` pushes the rendered rows to their correct visual position. At any point only ~15 rows exist in the DOM.
+
+---
+
+## Image Merging
+
+The photo is captured from the video feed onto a hidden canvas. A transparent signature canvas sits on top of it. On confirm, both canvases are drawn onto a third offscreen canvas sequentially — photo first, signature on top — and exported as a single Base64 PNG via `toDataURL`. Saved to localStorage per employee under `verified_{id}`.
+
+---
+
+## Geospatial Mapping
+
+Leaflet doesn't get coordinates from the API so I wrote a static city-to-coordinate lookup table in `src/utils/cityCoordinates.js`. Each city name is matched against it to place markers. Unmatched cities are filtered out.
+
+---
+
+## Intentional Bug — Security Vulnerability
+
+**Type:** Client-Side Authentication Bypass
+
+**Location:** `src/context/AuthContext.jsx` + `src/App.jsx`
+
+The auth system runs entirely in the browser. Login just saves a username string to localStorage and reads it back — no server, no token, no signature. Anyone can open the console, run `localStorage.setItem('auth_user', 'testuser')` and navigate to `/list` — fully authenticated without a password.
+
+**Why I chose it:** It's a realistic mistake that shows up in real projects. The client should never be the source of truth for access control.
+
+---
+
+## How to Fix It
+
+The fix is JWT-based auth with httpOnly cookies.
+
+- **Backend** (`/login` route): validate credentials, sign a JWT with a secret key, set it as an httpOnly cookie with an expiry
+- **Backend** (middleware): verify the JWT on every protected request — reject if missing or expired
+- **Frontend** (`src/context/AuthContext.jsx`): stop storing auth state in localStorage entirely — the httpOnly cookie is sent automatically by the browser and cannot be read or forged by JavaScript
+
+This way the server is the only thing that decides if a session is valid, not the client.
