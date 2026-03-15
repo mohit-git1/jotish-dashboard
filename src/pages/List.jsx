@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import useEmployeeData from '../hooks/useEmployeeData'
@@ -12,6 +12,18 @@ const List = () => {
   const navigate = useNavigate()
   const containerRef = useRef(null)
   const [scrollTop, setScrollTop] = useState(0)
+  const [rowCount, setRowCount] = useState(0)
+
+  // intentional bug: stale closure — rowCount inside this effect
+  // will always be 0 because the dependency array is empty.
+  // the effect runs once on mount and closes over the initial value of rowCount.
+  // even as data loads and rowCount changes, the logged value stays 0.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log('visible row count:', rowCount)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   const handleScroll = useCallback(() => {
     setScrollTop(containerRef.current.scrollTop)
